@@ -8,6 +8,7 @@ from strawberry.file_uploads import Upload
 @strawberry.input
 class NewImageInput:
     file: Upload
+    home_id: Optional[int] = None
     description: Optional[str] = None
 
 class CloudinaryType:

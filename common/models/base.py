@@ -6,7 +6,7 @@ from core.database import DB_ENGINE
 from sqlmodel import SQLModel
 
 T = TypeVar("T", bound=SQLModel)
-U = TypeVar("U")
+U = TypeVar("U", contravariant=True)
 
 class BaseManager(ABC):
     """
@@ -55,7 +55,6 @@ class BaseManager(ABC):
             self.value = value
             for relationship in self.__model_class.__sqlmodel_relationships__:
                 getattr(self.value, relationship)
-            print({"the_fields": self.__model_class.__sqlmodel_relationships__})
             self.__to_gql()
             return self
 
@@ -102,7 +101,7 @@ class BaseManager(ABC):
             if limit: statement = statement.limit(limit)
             items = session.exec(statement).all()
             self.bulk_values = items
-            self.bulk_gq = list(map(lambda item: self.__parse_gql(item), items))
+            self.bulk_gql = list(map(lambda item: self.__parse_gql(item), items))
         return self
 
 

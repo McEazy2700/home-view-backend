@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, List, Self
 
 from sqlmodel import Session, select
 from core.database import DB_ENGINE
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 class CountryManager(BaseManager):
     value: "Country"
     gql: "CountryType"
+    bulk_gql: List["CountryType"]
     """
     Conatins all database operations that can be caried out on a Country model
     """
