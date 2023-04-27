@@ -8,15 +8,15 @@ from homes.models.models import LGA, Country, Home, Location, State
 class HomeMutations:
     @strawberry.mutation
     def new_country(self, name: str, country_code: str) -> CountryType:
-        return Country.objects().new(name=name, country_code=country_code).gql()
+        return Country.objects().new(name=name, country_code=country_code).gql
 
     @strawberry.mutation
     def new_state(self, name: str, country_id: int) -> StateType:
-        return State.objects().new(name=name, country_id=country_id).gql()
+        return State.objects().new(name=name, country_id=country_id).gql
 
     @strawberry.mutation
     def new_lga(self, name: str, state_id: int) -> LGAType:
-        return LGA.objects().new(name=name, state_id=state_id).gql()
+        return LGA.objects().new(name=name, state_id=state_id).gql
 
     @strawberry.mutation
     def new_location(self, input: NewLocationInput) -> LocationType:
@@ -26,7 +26,7 @@ class HomeMutations:
                 longitude=input.longitude,
                 lga_id=input.lga_id
             )
-        return new_location.gql()
+        return new_location.gql
 
     @strawberry.mutation
     def new_home(self, input: NewHomeInput) -> HomeType:
@@ -35,4 +35,4 @@ class HomeMutations:
                 description=input.description,
                 location_id=input.location_id,
                 room_count=input.room_count)
-        return new_home.gql()
+        return new_home.gql

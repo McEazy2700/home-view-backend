@@ -16,7 +16,7 @@ class TestGraphql(unittest.TestCase):
 
     def test_image_to_image_type(self):
         img_bytes = gen_image_bytes()
-        new_image = Image.objects.new(Upload(img_bytes), description="Testing gql")
+        new_image = Image.objects().new(Upload(img_bytes), description="Testing gql")
         image_type = model_to_strawberry(
                 ImageType,
                 Image, new_image.value,

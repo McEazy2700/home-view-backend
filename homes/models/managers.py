@@ -4,17 +4,19 @@ from sqlmodel import Session, select
 from core.database import DB_ENGINE
 
 from common.models.base import BaseManager
-# TODO: Implement filterable queries
+#  TODO: Implement filterable queries
 
 if TYPE_CHECKING:
     from homes.models.models import Country, State, LGA, Location, Home
+    from ..graphql.types import CountryType, StateType, LGAType, LocationType, HomeType
 
 
 class CountryManager(BaseManager):
+    value: "Country"
+    gql: "CountryType"
     """
     Conatins all database operations that can be caried out on a Country model
     """
-    value: "Country"
 
     def new(self, name: str, country_code: str) -> Self:
         name=name.capitalize()
@@ -22,25 +24,9 @@ class CountryManager(BaseManager):
         return super().new(name=name, country_code=country_code)
 
     def get(self, id: int|None=None, name: str|None=None, country_code: str|None=None) -> Self:
-        from homes.models.models import Country
-        if not id and not name and not country_code:
-            raise ValueError("Either id or name or country_code must be passed")
-
-        with Session(DB_ENGINE) as session:
-            statement = select(Country)
-            if id:
-                statement = statement.where(Country.id==id)
-            elif name:
-                statement = statement.where(Country.name==name.capitalize())
-            elif country_code:
-                statement = statement.where(Country.country_code==country_code.upper())
-            value = session.exec(statement).one()
-            self.value = value
-            self.value.states
-            for state in self.value.states:
-                state.country
-                state.lgas
-            return self
+        if name: name = name.capitalize()
+        if country_code: country_code = country_code.upper()
+        return super().get(id=id, name=name, country_code=country_code)
 
 
 class StateManager(BaseManager):
@@ -48,18 +34,10 @@ class StateManager(BaseManager):
     Conatins all database operations that can be caried out on a State model
     """
     value: "State"
+    gql: "StateType"
 
     def get(self, id: int) -> Self:
-        from homes.models.models import State
-        with Session(DB_ENGINE) as session:
-            statement = select(State).where(State.id==id).join(State.country)
-            self.value = session.exec(statement).one()
-            self.value.country.states
-            self.value.lgas
-            for lga in self.value.lgas:
-                lga.locations
-                lga.state
-            return self
+        return super().get(id=id)
 
 
 class LGAManager(BaseManager):
@@ -67,19 +45,10 @@ class LGAManager(BaseManager):
     Conatins all database operations that can be caried out on a LocaGovtArea model
     """
     value: "LGA"
+    gql: "LGAType"
 
     def get(self, id: int) -> Self:
-        from homes.models.models import LGA
-        with Session(DB_ENGINE) as session:
-            statement = select(LGA).where(LGA.id==id).join(LGA.state)
-            self.value = session.exec(statement).one()
-            self.value.state.lgas
-            self.value.state.country
-            self.value.locations
-            for loc in self.value.locations:
-                loc.home
-                if loc.home: loc.home.images
-            return self
+        return super().get(id=id)
 
 
 class LocationManager(BaseManager):
@@ -87,6 +56,7 @@ class LocationManager(BaseManager):
     Conatins all database operations that can be caried out on a Location model
     """
     value: "Location"
+    gql: "LocationType"
 
     def new(self, address: str,
             lga_id: int|None=None,
@@ -128,6 +98,7 @@ class HomeManager(BaseManager):
     Conatins all database operations that can be caried out on a Home model
     """
     value: "Home"
+    gql: "HomeType"
 
     def new(self, name: str,
             location_id: int,

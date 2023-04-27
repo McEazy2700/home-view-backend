@@ -7,4 +7,4 @@ from homes.models.models import Country
 class HomesQuery:
     @strawberry.field
     def country(self, id: int) -> CountryType:
-        return Country.objects().get(id=id).gql()
+        return Country.objects().get(id=id).gql

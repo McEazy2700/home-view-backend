@@ -21,7 +21,7 @@ class TestModels(unittest.TestCase):
 
     def test_new_image(self):
         img_bytes = gen_image_bytes()
-        img = Image.objects.new(Upload(img_bytes), description="test image")
+        img = Image.objects().new(Upload(img_bytes), description="test image")
         self.assertEqual(img.value.description, "test image")
         img.delete()
 
