@@ -35,8 +35,17 @@ class BaseManager(ABC):
             self.value = new_item
             for field in self.__fields:
                 getattr(self.value, field)
-        self.__to_gql()
-        return self
+            self.__to_gql()
+            return self
+
+    def bulk_new(self, items: List[T]) -> Self:
+        with Session(DB_ENGINE) as session:
+            session.add_all(items)
+            session.commit()
+            for item in items:
+                session.refresh(item)
+            self.__handle_bulk(items)
+            return self
 
 
     def get(self, **kwargs) -> Self:
@@ -84,9 +93,8 @@ class BaseManager(ABC):
             if limit: statement = statement.limit(limit)
                 
             items = session.exec(statement).all()
-            self.bulk_values = items
-            self.bulk_gql = list(map(lambda item: self.__parse_gql(item), items))
-        return self
+            self.__handle_bulk(items)
+            return self
 
 
     def all(self, offset:int|None=None, limit:int|None=None) -> Self:
@@ -100,9 +108,8 @@ class BaseManager(ABC):
             if offset: statement = statement.offset(offset)
             if limit: statement = statement.limit(limit)
             items = session.exec(statement).all()
-            self.bulk_values = items
-            self.bulk_gql = list(map(lambda item: self.__parse_gql(item), items))
-        return self
+            self.__handle_bulk(items)
+            return self
 
 
     def delete(self, instance: Any|None=None):
@@ -117,6 +124,11 @@ class BaseManager(ABC):
             else:
                 session.delete(self.value)
             session.commit()
+
+
+    def __handle_bulk(self, items: List[Any]):
+            self.bulk_values = items
+            self.bulk_gql = list(map(lambda item: self.__parse_gql(item), items))
 
 
     def __parse_gql(self, instance: Any|None=None):

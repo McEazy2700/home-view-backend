@@ -2,6 +2,7 @@ import unittest
 
 from sqlalchemy.exc import NoResultFound
 from strawberry.file_uploads import Upload
+from common.graphql.types import ModelImageInput
 from common.models.models import Image
 
 from utils.tests.preps import clean_up_test_db, set_up_test_db
@@ -132,7 +133,12 @@ class TestNewModels(unittest.TestCase):
             new_home = Home.objects().new(name="Home for the cool kids", location_id=new_location.value.id)
             assert new_home.value.id is not None
             img_bytes = gen_image_bytes()
-            Image.objects().new(Upload(img_bytes), description="home image", home_id=new_home.value.id)
+            Image.objects().new(
+                    ModelImageInput(
+                        file=Upload(img_bytes),
+                        description="home image",
+                        home_id=new_home.value.id)
+                    )
 
         def test_get_home():
             home = Home.objects().get(id=1)

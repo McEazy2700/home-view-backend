@@ -1,7 +1,6 @@
 import unittest
 
-from strawberry.file_uploads import Upload
-from common.graphql.types import ImageType
+from common.graphql.types import ImageType, ModelImageInput
 from common.models.models import Image
 from common.tests.test_models import gen_image_bytes
 from common.utils.model_graphql_utils import model_to_strawberry
@@ -16,7 +15,7 @@ class TestGraphql(unittest.TestCase):
 
     def test_image_to_image_type(self):
         img_bytes = gen_image_bytes()
-        new_image = Image.objects().new(Upload(img_bytes), description="Testing gql")
+        new_image = Image.objects().new(ModelImageInput(file=img_bytes, description="Testing gql"))
         image_type = model_to_strawberry(
                 ImageType,
                 Image, new_image.value,

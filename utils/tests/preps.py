@@ -1,5 +1,3 @@
-import os
-
 from sqlmodel import SQLModel
 from core.database import DB_ENGINE
 from core.settings import TESTING

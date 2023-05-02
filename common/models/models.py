@@ -13,6 +13,7 @@ class Image(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     url: str
     public_id: str
+    is_cover: Optional[bool] = Field(default=False)
     description: Optional[str] = Field(default=None)
     home_id: Optional[int] = Field(default=None, foreign_key="home.id")
     home: Optional["Home"] = Relationship(
@@ -22,5 +23,5 @@ class Image(SQLModel, table=True):
     @classmethod
     def objects(cls) -> ImageManager:
         from ..graphql.types import ImageType
-        fields=["id", "url", "public_id", "description", "home_id", "home"]
+        fields=["id", "url", "public_id", "description", "home_id", "home", "is_cover"]
         return ImageManager(cls, gql_type=ImageType, fields=fields)
